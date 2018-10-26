@@ -45,32 +45,36 @@ trait players
         if ($this->getPlayer() == 1 && $this->getMove())
         {
 
-
             if (isset($_SESSION['matrixA'])) {
-                $this->matrixA = $_SESSION['matrixA'] . $this->getMove() . "A,";
+
+                $convertA = (!empty($_SESSION['matrixA']) ? $_SESSION['matrixA'] : []);
+                $convertA = explode(",", $convertA);
+                $convertA = array_flip($convertA);
+                if (!in_array($this->getMove(),$convertA))
+                $_SESSION['matrixA'] = $_SESSION['matrixA'] . $this->getMove() . ",";
             }
             else{
-                $this->matrixA = $this->getMove(). "A,";
+                $_SESSION['matrixA'] = $this->getMove(). ",";
             }
-            //$this->matrixA = array_push($this->matrixA, $this->getMove());
-
-//            setCookie("matrixA", $this->matrixA, NULL, NULL, NULL, NULL, TRUE);
-            //echo $this->matrixA;
+            $this->matrixA = $_SESSION['matrixA'];
             return $this->matrixA;
             //$this->tempMatrix = $this->matrixA;
         }
         if ($this->getPlayer() ==  2 && $this->getMove())
         {
             if (isset($_SESSION['matrixB'])) {
-                $this->matrixB = $_SESSION['matrixB'] . $this->getMove() . "B,";
+                $convertB = (!empty($_SESSION['matrixB']) ? $_SESSION['matrixB'] : []);
+                $convertB = explode(",", $convertB);
+                $convertB = array_flip($convertB);
+                if (!in_array($this->getMove(), $convertB))
+                {
+                    $_SESSION['matrixB'] = $_SESSION['matrixB'] . $this->getMove() . ",";
+                }
             }
             else{
-                $this->matrixB = $this->getMove(). "B,";
+                $_SESSION['matrixB'] = $this->getMove(). ",";
             }
-//$this->matrixB = array_push($this->matrixB, $this->getMove());
-
-//            setCookie("matrixB", $this->matrixB, NULL, NULL, NULL, NULL, TRUE);
-            //echo $this->matrixB;
+            $this->matrixB = $_SESSION['matrixB'];
             return $this->matrixB;
             //$this->tempMatrix = $this->matrixB;
 
