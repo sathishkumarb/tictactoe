@@ -8,14 +8,14 @@ abstract class tictactoe
     protected $move = null;
     protected $player = null;
     protected $successmatrix = [
-        1=>[11,12,13],
-        2=>[21,22,23],
-        3=>[31,22,23],
-        4=>[11,21,31],
-        5=>[12,22,32],
-        6=>[13,23,33],
-        7=>[11,22,33],
-        8=>[13,22,31],
+        1=>'11,12,13',
+        2=>'21,22,23',
+        3=>'31,22,23',
+        4=>'11,21,31',
+        5=>'12,22,32',
+        6=>'13,23,33',
+        7=>'11,22,33',
+        8=>'13,22,31',
     ];
 
     protected $matrixA = "";
@@ -87,6 +87,49 @@ trait players
 
         }
 
+    }
+
+    public function validateMoveState()
+    {
+        $flag =0;
+
+        if ($this->getPlayer() == 1 && $this->getMove())
+        {
+            foreach ($this->successmatrix as $matrix)
+            {
+                $matrixConvert = explode(",", $matrix);
+
+                $matrixMoveConvert = explode(",",  $_SESSION['matrixA']);
+
+                $matchArray = array_intersect($matrixConvert,$matrixMoveConvert);
+
+                if ($matchArray && count($matchArray)>2)
+                {
+                    $flag =1;
+                }
+            }
+        }
+        else if ($this->getPlayer() == 2 && $this->getMove())
+        {
+            foreach ($this->successmatrix as $matrix)
+            {
+                $matrixConvert = explode(",", $matrix);
+                $matrixMoveConvert = explode(",",  $_SESSION['matrixB']);
+
+                $matchArray = array_intersect($matrixConvert,$matrixMoveConvert);
+
+                if ($matchArray && count($matchArray)>2)
+                {
+//                    print_r($matchArray);
+                    $flag =2;
+                }
+            }
+        }
+        if ($_SESSION['number'] > 8 and !$flag)
+        {
+            $flag = 3;
+        }
+        return $flag;
     }
 
 }

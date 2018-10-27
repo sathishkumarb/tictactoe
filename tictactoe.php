@@ -1,15 +1,22 @@
 <?php
-session_start();
+//to start the session
+if (!isset($_SESSION)) {
+    session_start();
+}
 require 'scratch.php';
 print_r($_POST);
+
 $move = null;
 $pass = 1;
+$state = 0;
+
+//conditional check to validation move and player
 if ($_SERVER["REQUEST_METHOD"] == "POST" && !empty($_POST["actionId"]) && !empty($_POST["actionOwner"]))
 {
     $move = $_POST['actionId'];
     $moveOwner = $_POST['actionOwner'];
 
-    if (!$_SESSION['number']) $_SESSION['number']=1;
+    if (!isset($_SESSION['number'])) $_SESSION['number']=1;
 
     if ($_SESSION['number'] <=9) // no of attempts user do 9
     {
@@ -18,14 +25,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && !empty($_POST["actionId"]) && !empty
             $playerA = new playerA();
             $playerA->setMove($move);
             $playerA->setPlayer($moveOwner);
-            echo $matrix = $playerA->processMove();
+            $matrix = $playerA->processMove();
+
+            $state = $playerA->validateMoveState();
         }
         if ($moveOwner == 2)
         {
             $playerB = new playerB();
             $playerB->setMove($move);
             $playerB->setPlayer($moveOwner);
-            echo $matrix = $playerB->processMove();
+            $matrix = $playerB->processMove();
+
+            $state = $playerB->validateMoveState();
         }
 
         $_SESSION['userCellClicks'][$_SESSION['number']]= $moveOwner ."_" .$move;
@@ -41,7 +52,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && !empty($_POST["actionId"]) && !empty
         }
     }
 }
-print_r($_SESSION);
+// clear session cahe and post data upon reaching termianl state
+if ($_SERVER["REQUEST_METHOD"] == "POST" && $state > 0 )
+{
+    session_destroy();
+    unset($_POST);
+}
 ?>
 <!DOCTYPE html>
 <html>
@@ -67,8 +83,34 @@ print_r($_SESSION);
 
             });
 
+            $(document).on('click', '#restart', function () {
+                window.open('/tictactoe/tictactoe.php');
+            });
+
         </script>
         <style type="text/css">
+            #wrapper{
+                padding-top:150px;
+                width:100%;
+                text-align:center;
+            }
+            #center{
+                display:inline-block;
+                *display:inline;/* IE*/
+                *zoom:1;/* IE*/
+                background:yellow;
+                overflow:hidden;
+                text-align:left;
+            }
+            #flashmessage{
+                display:inline-block;
+                *display:inline;/* IE*/
+                *zoom:1;/* IE*/
+                background:yellow;
+                overflow:hidden;
+                text-align:center;
+                font-size: x-large;
+            }
             td {
                 width: 100px;
                 height: 100px;
@@ -89,11 +131,45 @@ print_r($_SESSION);
         <title>Tic Tac Toe</title>
     </head>
     <body>
-        <form id="target" name="target" method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">
-            <table style="border:1px solid; borderollapse: collapse;">
+    <?php
+    if ($state)
+    {
+        switch ($state) {
+            case 1:
+                $message= "Player <b>X</b> won";
+                break;
+            case 2:
+                $message= "Player <b>0</b> won";
+                break;
+            case 3:
+                $message= "Game draw";
+                break;
+        }
+        echo '<div id="flashmessage" style="background-color: #00b3ff;color: #9ae60e; height: 40px; width: 100%;">'.$message.'</div>';
+    }
+    else
+    {
+        switch ($pass) {
+            case 1:
+                $message= "Player <b>X</b> turn";
+                break;
+            case 2:
+                $message= "Player <b>O</b> turn";
+                break;
+        }
+        echo '<div id="flashmessage" style="background-color: #00b3ff;color: #144082; height: 40px; width: 100%;">' .$message.'</div>';
+    }
+    ?>
+    <div id="wrapper">
+
+        <div id="center">
+            <form id="target" name="target" method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">
+            <table style="border:1px solid; border-collapse: collapse;">
                 <?php
                 $convertA =[];
                 $convertB =[];
+                if (!$state) $class = "move"; else $class ='';
+                //generate row 3
                 for ($outer=1; $outer<=3; $outer++)
                 {
                     $clickedcellStr =str_replace(",","",$move);
@@ -104,23 +180,19 @@ print_r($_SESSION);
                     {
                         $convertA = (!empty($_SESSION['matrixA']) ? rtrim($_SESSION['matrixA'], ", ") : $convertA);
                         $convertA = explode(",", $convertA);
-                        if (count($convertA) > 0)
-                        {
-                            print_r($convertA);
-                        }
+
                     }
 
                     if (isset($_SESSION['matrixB']))
                     {
                         $convertB = (!empty($_SESSION['matrixB']) ? rtrim($_SESSION['matrixB'], ", ") : $convertB);
                         $convertB = explode(",", $convertB);
-                        if (count($convertB) > 0)
-                        {
-                            print_r($convertB);
-                        }
+
                     }
 
                     $mergedArrVar = array_flip(array_merge($convertA,$convertB));
+
+                    //generate cells 3
 
                     for ($inc=1; $inc<=3;$inc++)
                     {
@@ -132,6 +204,8 @@ print_r($_SESSION);
                             foreach ($_SESSION['userCellClicks'] as $userClick)
                             {
                                 $userClickLog = explode("_", $userClick);
+
+                                //mtahc clicked session stored cells to block the cells
 
                                 if ($userClickLog[1] == $cellString)
                                 {
@@ -163,7 +237,7 @@ print_r($_SESSION);
                         }
                         else
                         {
-                            echo '<td class= "move" id="' . $cellString . '" style="background-color: #f9fe2a;">click</td>';
+                            echo '<td class= '.$class.' id="' . $cellString . '" style="background-color: #f9fe2a;">click</td>';
                         }
                     }
                     echo '</tr>';
@@ -171,10 +245,19 @@ print_r($_SESSION);
                 ?>
                 <input type="hidden" id="one" name="one" value="" />
                 <input type="hidden" id="two" name="two" value="" />
-                <input type="text" id="actionId" name="actionId" value="" />
-                <input type="text" id="actionOwner" name="actionOwner" value="<?=$pass?>" />
+                <input type="hidden" id="actionId" name="actionId" value="" />
+                <input type="hidden" id="actionOwner" name="actionOwner" value="<?=$pass?>" />
+                <?php
+                //rfresh to start game upon terminal state
+                if ($state) {
+
+                    echo '<input type="button" id="restart" id="restart" value="restart" />';
+                }
+                ?>
             </table>
         </form>
+        </div>
+    </div>
     </body>
 </html>
 
