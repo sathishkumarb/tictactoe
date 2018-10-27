@@ -2,6 +2,6 @@
 
 Session based tic tac toe
 
-session enabled on web server (php.ini) and cookie enabled on brwser
+#session must be enabled on web server (php.ini) and cookie enabled on browser
 
-Run the tictacte/tictacttoe.php
+Run http://localhost/tictactoe/
