@@ -1,0 +1,9 @@
+REGEDIT4
+[HKEY_CURRENT_USER\Environment]
+"PHP_PEAR_SYSCONF_DIR"="C:\\wampnew64\\www\\tictactoe"
+"PHP_PEAR_INSTALL_DIR"="C:\\wampnew64\\www\\tictactoe\\pear"
+"PHP_PEAR_DOC_DIR"="C:\\wampnew64\\www\\tictactoe\\docs"
+"PHP_PEAR_BIN_DIR"="C:\\wampnew64\\www\\tictactoe"
+"PHP_PEAR_DATA_DIR"="C:\\wampnew64\\www\\tictactoe\\data"
+"PHP_PEAR_PHP_BIN"="C:\\wampnew64\\bin\\php\\php7.2.10\\php.exe"
+"PHP_PEAR_TEST_DIR"="C:\\wampnew64\\www\\tictactoe\\tests"
