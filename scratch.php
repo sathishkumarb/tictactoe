@@ -1,5 +1,10 @@
 <?php
-abstract class tictactoe {
+/*
+ * author:sathish kumar.b
+ * github:https://github.com/sathishkumarb
+ */
+abstract class tictactoe
+{
     protected $move = null;
     protected $player = null;
     protected $successmatrix = [
@@ -45,34 +50,36 @@ trait players
         if ($this->getPlayer() == 1 && $this->getMove())
         {
 
-            if (isset($_SESSION['matrixA'])) {
-
+            if (isset($_SESSION['matrixA']))
+            {
                 $convertA = (!empty($_SESSION['matrixA']) ? $_SESSION['matrixA'] : []);
                 $convertA = explode(",", $convertA);
                 $convertA = array_flip($convertA);
-                if (!in_array($this->getMove(),$convertA))
-                $_SESSION['matrixA'] = $_SESSION['matrixA'] . $this->getMove() . ",";
+                if (!in_array($this->getMove(), $convertA))
+                    $_SESSION['matrixA'] = $_SESSION['matrixA'] . $this->getMove() . ",";
             }
-            else{
-                $_SESSION['matrixA'] = $this->getMove(). ",";
+            else
+            {
+                $_SESSION['matrixA'] = $this->getMove() . ",";
             }
             $this->matrixA = $_SESSION['matrixA'];
             return $this->matrixA;
             //$this->tempMatrix = $this->matrixA;
         }
-        if ($this->getPlayer() ==  2 && $this->getMove())
+        if ($this->getPlayer() == 2 && $this->getMove())
         {
-            if (isset($_SESSION['matrixB'])) {
+            if (isset($_SESSION['matrixB']))
+            {
                 $convertB = (!empty($_SESSION['matrixB']) ? $_SESSION['matrixB'] : []);
                 $convertB = explode(",", $convertB);
                 $convertB = array_flip($convertB);
-                if (!in_array($this->getMove(), $convertB))
-                {
+                if (!in_array($this->getMove(), $convertB)) {
                     $_SESSION['matrixB'] = $_SESSION['matrixB'] . $this->getMove() . ",";
                 }
             }
-            else{
-                $_SESSION['matrixB'] = $this->getMove(). ",";
+            else
+            {
+                $_SESSION['matrixB'] = $this->getMove() . ",";
             }
             $this->matrixB = $_SESSION['matrixB'];
             return $this->matrixB;
@@ -80,12 +87,12 @@ trait players
 
         }
 
-
-
     }
+
 }
 
-class playerA extends tictactoe {
+class playerA extends tictactoe
+{
     use players;
 
     public function setMove($move)
@@ -110,7 +117,8 @@ class playerA extends tictactoe {
 
 }
 
-class playerB extends tictactoe {
+class playerB extends tictactoe
+{
     use players;
 
     public function setMove($move)
@@ -134,6 +142,8 @@ class playerB extends tictactoe {
     }
 
 }
+
+
 
 
 
